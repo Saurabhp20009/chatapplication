@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/Saurabhp20009/chatapplication#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "openai": "^5.0.1"
   }
 }

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background: #4a90e2;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    #chat-box {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 8px;
+      max-width: 60%;
+    }
+
+    .message.self {
+      align-self: flex-end;
+      background: #dcf8c6;
+    }
+
+    form {
+      display: flex;
+      padding: 1rem;
+      background: #fff;
+      border-top: 1px solid #ccc;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      padding-left: 15px;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #4a90e2;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Chat App</header>
+
+  <div id="chat-box"></div>
+
+  <form id="chat-form">
+    <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" required />
+    <button type="submit">Send</button>
+  </form>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+  
+    function addMessage(text, isSelf = true) {
+      const msg = document.createElement('div');
+      msg.className = 'message' + (isSelf ? ' self' : '');
+      msg.innerText = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  
+    chatForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      if (message === '') return;
+  
+      addMessage(message, true);
+      messageInput.value = '';
+  
+      try {
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userMessage:message })
+        });
+  
+        const data = await res.json();
+        console.log("data",data)
+        addMessage(data.reply, false);
+      } catch (err) {
+        addMessage("⚠️ Error connecting to AI", false);
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>
